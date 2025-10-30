@@ -1,0 +1,38 @@
+{
+  "name": "ipc-jsonrpc-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "JSON-RPC 2.0 over IPC - Go server and Node.js client monorepo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gnana997/ipc-jsonrpc.git"
+  },
+  "author": "LLM Copilot Team",
+  "license": "MIT",
+  "workspaces": [
+    "node"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=node",
+    "build:go": "go build ./...",
+    "test": "npm run test:node && npm run test:go",
+    "test:node": "npm run test --workspace=node",
+    "test:go": "go test -v -race ./...",
+    "lint": "npm run lint:node && npm run lint:go",
+    "lint:node": "npm run lint --workspace=node",
+    "lint:go": "golangci-lint run ./...",
+    "format": "npm run format --workspace=node && gofmt -w .",
+    "format:check": "gofmt -l . && npm run format --workspace=node",
+    "typecheck": "npm run typecheck --workspace=node",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "npm run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.10"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

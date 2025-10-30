@@ -1,0 +1,31 @@
+# .gitattributes
+* text=auto eol=crlf
+
+# Go source files
+*.go text eol=crlf
+
+# Markdown documentation
+*.md text eol=crlf
+
+# Go module files
+*.mod text eol=crlf
+*.sum text eol=crlf
+
+# YAML files (for GitHub Actions)
+*.yml text eol=crlf
+*.yaml text eol=crlf
+
+# JSON files
+*.json text eol=crlf
+
+# JavaScript files
+*.js text eol=crlf
+
+# Shell scripts (if any)
+*.sh text eol=lf
+
+# Binary files
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
