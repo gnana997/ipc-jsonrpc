@@ -1,6 +1,6 @@
 {
   "name": "node-ipc-jsonrpc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Modern TypeScript client for JSON-RPC over IPC (Unix sockets/Named Pipes) - designed for Go servers",
   "keywords": [
     "ipc",
