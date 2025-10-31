@@ -1,0 +1,58 @@
+{
+  "name": "ipc-jsonrpc-vscode-example",
+  "displayName": "IPC JSON-RPC Example",
+  "description": "Example VSCode extension demonstrating IPC JSON-RPC communication with Go server",
+  "version": "0.0.1",
+  "private": true,
+  "publisher": "llm-copilot",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ipcExample.connect",
+        "title": "IPC Example: Connect to Server"
+      },
+      {
+        "command": "ipcExample.disconnect",
+        "title": "IPC Example: Disconnect from Server"
+      },
+      {
+        "command": "ipcExample.echo",
+        "title": "IPC Example: Echo Message"
+      },
+      {
+        "command": "ipcExample.uppercase",
+        "title": "IPC Example: Uppercase Text"
+      },
+      {
+        "command": "ipcExample.startNotifications",
+        "title": "IPC Example: Start Notifications"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "node esbuild.js",
+    "lint": "eslint src --ext ts"
+  },
+  "dependencies": {
+    "@gnana997/ipc-jsonrpc": "file:../../node"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.80.0",
+    "esbuild": "^0.19.12",
+    "typescript": "^5.7.2"
+  }
+}

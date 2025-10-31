@@ -2,8 +2,6 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/gnana997/ipc-jsonrpc.svg)](https://pkg.go.dev/github.com/gnana997/ipc-jsonrpc)
 [![npm version](https://img.shields.io/npm/v/@gnana997/ipc-jsonrpc.svg)](https://www.npmjs.com/package/@gnana997/ipc-jsonrpc)
-[![Go CI](https://github.com/gnana997/ipc-jsonrpc/actions/workflows/go.yml/badge.svg)](https://github.com/gnana997/ipc-jsonrpc/actions/workflows/go.yml)
-[![Node CI](https://github.com/gnana997/ipc-jsonrpc/actions/workflows/node.yml/badge.svg)](https://github.com/gnana997/ipc-jsonrpc/actions/workflows/node.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **JSON-RPC 2.0 over IPC** - A complete solution for inter-process communication using JSON-RPC 2.0 protocol over Unix sockets and Windows named pipes.
