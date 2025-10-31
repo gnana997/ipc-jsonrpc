@@ -277,7 +277,20 @@ export class JSONRPCClient extends EventEmitter<ClientEvents> {
       // This matches the Go server behavior with winio
       return `\\\\.\\pipe\\${path}`;
     }
-    return path;
+
+    // Unix/Linux/Mac socket path normalization
+    // If already has directory separator, keep it
+    if (path.includes('/')) {
+      return path;
+    }
+
+    // If has .sock extension, prepend /tmp/
+    if (path.endsWith('.sock')) {
+      return `/tmp/${path}`;
+    }
+
+    // Simple name - convert to /tmp/{name}.sock
+    return `/tmp/${path}.sock`;
   }
 
   /**
