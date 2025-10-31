@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+### Minor Changes
+
+- d621804: Refactored the socket path support for unix systems
+
 ## 0.1.1
 
 ### Patch Changes

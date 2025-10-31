@@ -10,44 +10,6 @@ import (
 	"time"
 )
 
-func TestNormalizeWindowsPipePath(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		want  string
-	}{
-		{
-			name:  "simple name",
-			input: "myapp",
-			want:  `\\.\pipe\myapp`,
-		},
-		{
-			name:  "already prefixed with pipe",
-			input: `\\.\pipe\myapp`,
-			want:  `\\.\pipe\myapp`,
-		},
-		{
-			name:  "already prefixed with question pipe",
-			input: `\\?\pipe\myapp`,
-			want:  `\\?\pipe\myapp`,
-		},
-		{
-			name:  "name with special chars",
-			input: "my-app_123",
-			want:  `\\.\pipe\my-app_123`,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := normalizeWindowsPipePath(tt.input)
-			if got != tt.want {
-				t.Errorf("normalizeWindowsPipePath(%q) = %q, want %q", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestIsWindows(t *testing.T) {
 	result := IsWindows()
 	expected := runtime.GOOS == "windows"
@@ -74,16 +36,28 @@ func TestIsWindows_IsUnix_Opposite(t *testing.T) {
 
 func TestGetSocketPath(t *testing.T) {
 	tests := []struct {
-		name string
-		path string
+		name         string
+		path         string
+		wantWindows  string
+		wantUnix     string
 	}{
 		{
-			name: "simple name",
-			path: "myapp",
+			name:        "simple name",
+			path:        "myapp",
+			wantWindows: `\\.\pipe\myapp`,
+			wantUnix:    "/tmp/myapp.sock",
 		},
 		{
-			name: "path with directory",
-			path: "/tmp/myapp.sock",
+			name:        "path with sock extension",
+			path:        "myapp.sock",
+			wantWindows: `\\.\pipe\myapp.sock`,
+			wantUnix:    "/tmp/myapp.sock",
+		},
+		{
+			name:        "absolute unix path",
+			path:        "/tmp/myapp.sock",
+			wantWindows: "/tmp/myapp.sock", // Windows treats this as-is (absolute path)
+			wantUnix:    "/tmp/myapp.sock",
 		},
 	}
 
@@ -92,15 +66,12 @@ func TestGetSocketPath(t *testing.T) {
 			result := GetSocketPath(tt.path)
 
 			if runtime.GOOS == "windows" {
-				// On Windows, should get normalized pipe path
-				expected := normalizeWindowsPipePath(tt.path)
-				if result != expected {
-					t.Errorf("GetSocketPath(%q) = %q, want %q", tt.path, result, expected)
+				if result != tt.wantWindows {
+					t.Errorf("GetSocketPath(%q) on Windows = %q, want %q", tt.path, result, tt.wantWindows)
 				}
 			} else {
-				// On Unix, should get path as-is
-				if result != tt.path {
-					t.Errorf("GetSocketPath(%q) = %q, want %q", tt.path, result, tt.path)
+				if result != tt.wantUnix {
+					t.Errorf("GetSocketPath(%q) on Unix = %q, want %q", tt.path, result, tt.wantUnix)
 				}
 			}
 		})

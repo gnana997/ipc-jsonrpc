@@ -11,13 +11,21 @@ import (
 )
 
 // normalizeWindowsPipePath adds the \\.\pipe\ prefix if not already present.
+// For absolute paths (with drive letters or directory separators), returns as-is
+// to support Windows 10+ Unix domain sockets.
 func normalizeWindowsPipePath(path string) string {
 	// If it's already a pipe path, return as-is
 	if strings.HasPrefix(path, `\\.\pipe\`) || strings.HasPrefix(path, `\\?\pipe\`) {
 		return path
 	}
 
-	// Otherwise, add the pipe prefix
+	// If it's an absolute path (contains drive letter or path separators),
+	// return as-is to support Unix domain sockets on Windows 10+
+	if strings.Contains(path, ":") || strings.Contains(path, `\`) || strings.Contains(path, "/") {
+		return path
+	}
+
+	// Simple name - convert to named pipe
 	return fmt.Sprintf(`\\.\pipe\%s`, path)
 }
 
