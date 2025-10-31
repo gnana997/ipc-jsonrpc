@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/gnana997/ipc-jsonrpc.git"
   },
-  "author": "LLM Copilot Team",
+  "author": "gnana997",
   "license": "MIT",
   "workspaces": [
     "node"

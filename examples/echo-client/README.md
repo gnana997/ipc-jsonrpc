@@ -31,10 +31,10 @@ go run main.go
 
 You should see:
 ```
-2024/10/31 05:13:29 Starting echo server...
-2024/10/31 05:13:29 [JSON-RPC] Server listening on \\.\pipe\echo-server  # Windows
+2025/10/31 05:13:29 Starting echo server...
+2025/10/31 05:13:29 [JSON-RPC] Server listening on \\.\pipe\echo-server  # Windows
 # or
-2024/10/31 05:13:29 [JSON-RPC] Server listening on /tmp/echo-server       # Unix/Mac
+2025/10/31 05:13:29 [JSON-RPC] Server listening on /tmp/echo-server       # Unix/Mac
 ```
 
 ### Step 2: Install Client Dependencies
@@ -65,7 +65,7 @@ Response: "Hello, World!"
 Sending object...
 Response: {
   "message": "Hello from client",
-  "timestamp": "2024-10-31T10:30:00.000Z",
+  "timestamp": "2025-10-31T10:30:00.000Z",
   "nested": { "value": 42 }
 }
 ```

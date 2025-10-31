@@ -219,7 +219,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for de
 
 ## 📄 License
 
-MIT © LLM Copilot Team
+MIT © gnana997
 
 ## 🔗 Links
 

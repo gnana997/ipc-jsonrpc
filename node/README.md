@@ -406,7 +406,7 @@ const task = await client.request('getNextTask', {
 | JSON-RPC 2.0 Compliant  | ✅                              | ❌ 1.0                 | ✅                         |
 | Notifications Support   | ✅                              | ❌                     | ⚠️ Limited                |
 | Timeout Handling        | ✅                              | ❌                     | ❌                         |
-| Last Updated            | 2024                            | 2015                   | 2018                       |
+| Last Updated            | 2025                            | 2015                   | 2018                       |
 
 ## Contributing
 
@@ -443,7 +443,7 @@ npm run dev
 
 ## License
 
-MIT © LLM Copilot Team
+MIT © gnana997
 
 ## Related Packages
 

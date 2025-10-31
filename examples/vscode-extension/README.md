@@ -210,11 +210,11 @@ The status bar item shows the current connection state:
 All IPC communication is logged to the **IPC JSON-RPC Example** output channel:
 
 ```
-[2024-10-31T10:30:00.000Z] Connecting to IPC server...
-[2024-10-31T10:30:00.100Z] ✓ Connected to server
-[2024-10-31T10:30:05.000Z] → Request: echo "Hello, World!"
-[2024-10-31T10:30:05.010Z] ← Response: "Hello, World!"
-[2024-10-31T10:30:10.000Z] 📩 Notification: progress - {"current":1,"total":5,"percent":20}
+[2025-10-31T10:30:00.000Z] Connecting to IPC server...
+[2025-10-31T10:30:00.100Z] ✓ Connected to server
+[2025-10-31T10:30:05.000Z] → Request: echo "Hello, World!"
+[2025-10-31T10:30:05.010Z] ← Response: "Hello, World!"
+[2025-10-31T10:30:10.000Z] 📩 Notification: progress - {"current":1,"total":5,"percent":20}
 ```
 
 ### Error Handling
