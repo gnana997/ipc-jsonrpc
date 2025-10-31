@@ -9,7 +9,7 @@
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "@gnana997/ipc-jsonrpc": "file:../../node"
+    "node-ipc-jsonrpc": "file:../../node"
   },
   "devDependencies": {
     "tsx": "^4.19.2",

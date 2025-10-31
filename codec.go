@@ -11,7 +11,7 @@ import (
 // LineDelimitedCodec handles encoding and decoding of line-delimited JSON messages.
 // Each JSON message is terminated with a newline character ('\n').
 //
-// This codec is compatible with the Node.js @gnana997/ipc-jsonrpc package
+// This codec is compatible with the Node.js node-ipc-jsonrpc package
 // which uses the same line-delimited JSON format.
 //
 // Thread-safety: This codec is safe for concurrent use. Reads and writes are

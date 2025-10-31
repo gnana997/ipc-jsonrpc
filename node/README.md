@@ -1,8 +1,8 @@
-# @gnana997/ipc-jsonrpc
+# node-ipc-jsonrpc
 
 Modern TypeScript client for JSON-RPC 2.0 over IPC (Unix sockets/Named Pipes). Designed for communication with Go servers, perfect for VSCode extensions and Electron apps.
 
-[![npm version](https://img.shields.io/npm/v/@gnana997/ipc-jsonrpc.svg)](https://www.npmjs.com/package/@gnana997/ipc-jsonrpc)
+[![npm version](https://img.shields.io/npm/v/node-ipc-jsonrpc.svg)](https://www.npmjs.com/package/node-ipc-jsonrpc)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Why This Package?
@@ -20,21 +20,21 @@ Modern TypeScript client for JSON-RPC 2.0 over IPC (Unix sockets/Named Pipes). D
 ## Installation
 
 ```bash
-npm install @gnana997/ipc-jsonrpc
+npm install node-ipc-jsonrpc
 ```
 
 ```bash
-yarn add @gnana997/ipc-jsonrpc
+yarn add node-ipc-jsonrpc
 ```
 
 ```bash
-pnpm add @gnana997/ipc-jsonrpc
+pnpm add node-ipc-jsonrpc
 ```
 
 ## Quick Start
 
 ```typescript
-import { JSONRPCClient } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCClient } from 'node-ipc-jsonrpc';
 
 // Create client
 const client = new JSONRPCClient({
@@ -243,7 +243,7 @@ await client.connect();
 The client throws `JSONRPCError` for server errors, which includes the JSON-RPC error code and optional data:
 
 ```typescript
-import { JSONRPCError } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCError } from 'node-ipc-jsonrpc';
 
 try {
   const result = await client.request('getData', { id: 123 });
@@ -307,7 +307,7 @@ Perfect for VSCode extensions that need to communicate with a native server:
 
 ```typescript
 import * as vscode from 'vscode';
-import { JSONRPCClient } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCClient } from 'node-ipc-jsonrpc';
 
 export function activate(context: vscode.ExtensionContext) {
   const client = new JSONRPCClient({
@@ -348,7 +348,7 @@ Communicate between Electron main process and native backend:
 
 ```typescript
 import { app } from 'electron';
-import { JSONRPCClient } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCClient } from 'node-ipc-jsonrpc';
 
 const client = new JSONRPCClient({
   socketPath: process.platform === 'win32' ? 'myapp' : '/tmp/myapp.sock',
@@ -372,7 +372,7 @@ Coordinate between Node.js processes:
 
 ```typescript
 // worker.ts
-import { JSONRPCClient } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCClient } from 'node-ipc-jsonrpc';
 
 const client = new JSONRPCClient({
   socketPath: '/tmp/coordinator.sock',
@@ -394,7 +394,7 @@ const task = await client.request('getNextTask', {
 
 ## Comparison with Other Packages
 
-| Feature                 | @gnana997/ipc-jsonrpc | json-ipc (9 years old) | json-ipc-lib (6 years old) |
+| Feature                 | node-ipc-jsonrpc | json-ipc (9 years old) | json-ipc-lib (6 years old) |
 | ----------------------- | ------------------------------- | ---------------------- | -------------------------- |
 | TypeScript              | ✅ Native                       | ❌                     | ❌                         |
 | ESM + CJS               | ✅                              | ❌ CJS only            | ❌ CJS only                |

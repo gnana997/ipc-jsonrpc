@@ -1,5 +1,5 @@
 /**
- * @gnana997/ipc-jsonrpc
+ * node-ipc-jsonrpc
  *
  * Modern TypeScript client for JSON-RPC over IPC (Unix sockets/Named Pipes)
  * Designed for Go servers, VSCode extensions, and Electron apps

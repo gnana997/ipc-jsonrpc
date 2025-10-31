@@ -1,6 +1,6 @@
 # VSCode Extension Example
 
-This example demonstrates how to create a VSCode extension that communicates with a Go server using `@gnana997/ipc-jsonrpc` over IPC (Inter-Process Communication).
+This example demonstrates how to create a VSCode extension that communicates with a Go server using `node-ipc-jsonrpc` over IPC (Inter-Process Communication).
 
 ## Features
 
@@ -318,7 +318,7 @@ Status bar, output channel, and notifications can all be customized in `src/clie
 ### Build errors
 
 - Run `npm install` to ensure dependencies are installed
-- Ensure `@gnana997/ipc-jsonrpc` package is built: `cd ../../node && npm run build`
+- Ensure `node-ipc-jsonrpc` package is built: `cd ../../node && npm run build`
 - Check TypeScript version compatibility
 
 ## Production Deployment

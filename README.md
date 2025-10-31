@@ -1,7 +1,7 @@
 # ipc-jsonrpc
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/gnana997/ipc-jsonrpc.svg)](https://pkg.go.dev/github.com/gnana997/ipc-jsonrpc)
-[![npm version](https://img.shields.io/npm/v/@gnana997/ipc-jsonrpc.svg)](https://www.npmjs.com/package/@gnana997/ipc-jsonrpc)
+[![npm version](https://img.shields.io/npm/v/node-ipc-jsonrpc.svg)](https://www.npmjs.com/package/node-ipc-jsonrpc)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **JSON-RPC 2.0 over IPC** - A complete solution for inter-process communication using JSON-RPC 2.0 protocol over Unix sockets and Windows named pipes.
@@ -11,7 +11,7 @@
 | Package | Language | Description | Docs |
 |---------|----------|-------------|------|
 | [`github.com/gnana997/ipc-jsonrpc`](https://pkg.go.dev/github.com/gnana997/ipc-jsonrpc) | Go | JSON-RPC 2.0 server implementation | [Go Documentation](./GO_README.md) |
-| [`@gnana997/ipc-jsonrpc`](https://www.npmjs.com/package/@gnana997/ipc-jsonrpc) | TypeScript/Node.js | JSON-RPC 2.0 client library | [Node Documentation](./node/README.md) |
+| [`node-ipc-jsonrpc`](https://www.npmjs.com/package/node-ipc-jsonrpc) | TypeScript/Node.js | JSON-RPC 2.0 client library | [Node Documentation](./node/README.md) |
 
 ## ✨ Features
 
@@ -75,7 +75,7 @@ func main() {
 ### Node.js Client
 
 ```typescript
-import { JSONRPCClient } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCClient } from 'node-ipc-jsonrpc';
 
 // Create client
 const client = new JSONRPCClient({
@@ -224,7 +224,7 @@ MIT © LLM Copilot Team
 ## 🔗 Links
 
 - **Go Documentation**: https://pkg.go.dev/github.com/gnana997/ipc-jsonrpc
-- **npm Package**: https://www.npmjs.com/package/@gnana997/ipc-jsonrpc
+- **npm Package**: https://www.npmjs.com/package/node-ipc-jsonrpc
 - **Issues**: https://github.com/gnana997/ipc-jsonrpc/issues
 - **Discussions**: https://github.com/gnana997/ipc-jsonrpc/discussions
 

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { JSONRPCClient, JSONRPCError } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCClient, JSONRPCError } from 'node-ipc-jsonrpc';
 
 export class IPCClient {
   private client: JSONRPCClient | null = null;

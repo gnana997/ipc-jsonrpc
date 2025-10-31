@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Graceful shutdown with context timeout
 - Line-delimited JSON codec
 - Comprehensive documentation and examples
-- Compatible with @gnana997/ipc-jsonrpc Node.js package
+- Compatible with node-ipc-jsonrpc Node.js package
 - dependencies (github.com/Microsoft/go-winio for Windows)
 
 ### Changed

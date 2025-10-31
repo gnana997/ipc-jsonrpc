@@ -3,7 +3,7 @@
 //
 // This package implements the JSON-RPC 2.0 specification with line-delimited
 // JSON encoding for communication over IPC transports. It is designed to be
-// compatible with the @gnana997/ipc-jsonrpc Node.js package.
+// compatible with the node-ipc-jsonrpc Node.js package.
 package jsonrpcipc
 
 import (

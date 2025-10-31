@@ -373,7 +373,7 @@ npm run changeset
 ```
 
 Select:
-1. **Packages to version**: Choose `@gnana997/ipc-jsonrpc`
+1. **Packages to version**: Choose `node-ipc-jsonrpc`
 2. **Version bump**: Major, minor, or patch
 3. **Description**: Summary of changes
 

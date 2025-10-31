@@ -17,7 +17,7 @@ A pure Go implementation of JSON-RPC 2.0 server over IPC (Unix sockets and Windo
 ✅ **Notifications** - Server can push notifications to clients
 ✅ **Graceful Shutdown** - Clean shutdown with context timeout
 ✅ **Well-Tested** - Comprehensive test coverage
-✅ **Compatible** - Works with [@gnana997/ipc-jsonrpc](https://www.npmjs.com/package/@gnana997/ipc-jsonrpc) Node.js package
+✅ **Compatible** - Works with [node-ipc-jsonrpc](https://www.npmjs.com/package/node-ipc-jsonrpc) Node.js package
 
 ## Installation
 
@@ -391,10 +391,10 @@ func logRequest(method string, duration time.Duration, err error) {
 
 ## Testing with Node.js Client
 
-This server is compatible with the [@gnana997/ipc-jsonrpc](https://www.npmjs.com/package/@gnana997/ipc-jsonrpc) Node.js package:
+This server is compatible with the [node-ipc-jsonrpc](https://www.npmjs.com/package/node-ipc-jsonrpc) Node.js package:
 
 ```typescript
-import { JSONRPCClient } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCClient } from 'node-ipc-jsonrpc';
 
 const client = new JSONRPCClient({
   socketPath: 'myapp', // Same as Go server
@@ -490,7 +490,7 @@ MIT © LLM Copilot Team
 
 ## Related Packages
 
-- **Node.js Client**: [@gnana997/ipc-jsonrpc](https://www.npmjs.com/package/@gnana997/ipc-jsonrpc)
+- **Node.js Client**: [node-ipc-jsonrpc](https://www.npmjs.com/package/node-ipc-jsonrpc)
 
 ---
 

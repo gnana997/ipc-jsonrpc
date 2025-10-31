@@ -1,4 +1,4 @@
-import { JSONRPCClient } from '@gnana997/ipc-jsonrpc';
+import { JSONRPCClient } from 'node-ipc-jsonrpc';
 
 // ANSI color codes for better console output
 const colors = {

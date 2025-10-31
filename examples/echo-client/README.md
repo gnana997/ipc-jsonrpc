@@ -1,6 +1,6 @@
 # Echo Client Example
 
-This example demonstrates how to use the `@gnana997/ipc-jsonrpc` Node.js/TypeScript client to communicate with the Go echo server.
+This example demonstrates how to use the `node-ipc-jsonrpc` Node.js/TypeScript client to communicate with the Go echo server.
 
 ## Features Demonstrated
 
@@ -180,14 +180,14 @@ You only need to specify the simple socket name: `'echo-server'`
 
 ### TypeScript errors
 - Run `npm install` to ensure all dependencies are installed
-- Make sure the `@gnana997/ipc-jsonrpc` package is built: `cd ../../node && npm run build`
+- Make sure the `node-ipc-jsonrpc` package is built: `cd ../../node && npm run build`
 
 ## Next Steps
 
 - Try modifying the parameters sent to methods
 - Add your own RPC methods to the server
 - Explore the VSCode extension example for a more complex use case
-- Check out the `@gnana997/ipc-jsonrpc` [documentation](../../node/README.md)
+- Check out the `node-ipc-jsonrpc` [documentation](../../node/README.md)
 
 ## License
 
