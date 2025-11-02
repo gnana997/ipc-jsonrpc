@@ -225,10 +225,7 @@ describe('JSONRPCClient', () => {
       expect(writtenData).toContain('"params":{"id":123}');
 
       // Simulate server response
-      mockSocket.emit(
-        'data',
-        Buffer.from('{"jsonrpc":"2.0","result":{"data":"test"},"id":1}\n')
-      );
+      mockSocket.emit('data', Buffer.from('{"jsonrpc":"2.0","result":{"data":"test"},"id":1}\n'));
 
       const result = await requestPromise;
       expect(result).toEqual({ data: 'test' });
@@ -263,11 +260,11 @@ describe('JSONRPCClient', () => {
       mockSocket.emit(
         'data',
         Buffer.from(
-          JSON.stringify({
+          `${JSON.stringify({
             jsonrpc: '2.0',
             error: { code: -32601, message: 'Method not found' },
             id: 1,
-          }) + '\n'
+          })}\n`
         )
       );
 
@@ -299,16 +296,10 @@ describe('JSONRPCClient', () => {
       const request2 = client.request('method2');
 
       // Respond to request 2 first
-      mockSocket.emit(
-        'data',
-        Buffer.from('{"jsonrpc":"2.0","result":"result2","id":2}\n')
-      );
+      mockSocket.emit('data', Buffer.from('{"jsonrpc":"2.0","result":"result2","id":2}\n'));
 
       // Then respond to request 1
-      mockSocket.emit(
-        'data',
-        Buffer.from('{"jsonrpc":"2.0","result":"result1","id":1}\n')
-      );
+      mockSocket.emit('data', Buffer.from('{"jsonrpc":"2.0","result":"result1","id":1}\n'));
 
       expect(await request1).toBe('result1');
       expect(await request2).toBe('result2');
@@ -370,11 +361,11 @@ describe('JSONRPCClient', () => {
       mockSocket.emit(
         'data',
         Buffer.from(
-          JSON.stringify({
+          `${JSON.stringify({
             jsonrpc: '2.0',
             method: 'progress',
             params: { percentage: 50 },
-          }) + '\n'
+          })}\n`
         )
       );
 

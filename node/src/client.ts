@@ -1,17 +1,12 @@
 import { EventEmitter } from 'node:events';
-import * as net from 'node:net';
-import * as os from 'node:os';
+import { JSONRPCError as BaseJSONRPCError } from '@gnana997/node-jsonrpc';
+import { JSONRPCClient as BaseJSONRPCClient } from '@gnana997/node-jsonrpc/client';
+import { IPCTransport } from './transport.js';
 import type {
   ClientConfig,
   ClientEvents,
   ConnectionState,
   JSONRPCError as IJSONRPCError,
-  JSONRPCErrorResponse,
-  JSONRPCMessage,
-  JSONRPCNotification,
-  JSONRPCRequest,
-  JSONRPCResponse,
-  PendingRequest,
 } from './types.js';
 import { ConnectionState as State } from './types.js';
 
@@ -37,28 +32,10 @@ export class JSONRPCError extends Error implements IJSONRPCError {
 }
 
 /**
- * Type guard to check if a message is an error response
- */
-function isErrorResponse(message: JSONRPCMessage): message is JSONRPCErrorResponse {
-  return 'error' in message && message.error !== undefined;
-}
-
-/**
- * Type guard to check if a message is a success response
- */
-function isSuccessResponse(message: JSONRPCMessage): message is JSONRPCResponse {
-  return 'result' in message && !('error' in message);
-}
-
-/**
- * Type guard to check if a message is a notification
- */
-function isNotification(message: JSONRPCMessage): message is JSONRPCNotification {
-  return 'method' in message && !('id' in message);
-}
-
-/**
  * JSON-RPC Client for IPC communication over Unix sockets/Named Pipes
+ *
+ * This is a wrapper around @gnana997/node-jsonrpc's JSONRPCClient that provides
+ * IPC-specific transport and maintains backward compatibility with the original API.
  *
  * @example
  * ```typescript
@@ -81,11 +58,9 @@ function isNotification(message: JSONRPCMessage): message is JSONRPCNotification
  */
 export class JSONRPCClient extends EventEmitter<ClientEvents> {
   private config: Required<ClientConfig>;
-  private socket: net.Socket | null = null;
+  private transport: IPCTransport;
+  private client: BaseJSONRPCClient;
   private state: ConnectionState = State.DISCONNECTED;
-  private requestId = 0;
-  private pendingRequests = new Map<string | number, PendingRequest>();
-  private buffer = '';
   private reconnectAttempts = 0;
 
   constructor(config: ClientConfig) {
@@ -99,6 +74,72 @@ export class JSONRPCClient extends EventEmitter<ClientEvents> {
       maxReconnectAttempts: config.maxReconnectAttempts ?? 3,
       reconnectDelay: config.reconnectDelay ?? 1000,
     };
+
+    // Create IPC transport
+    this.transport = new IPCTransport({
+      socketPath: this.config.socketPath,
+      connectionTimeout: this.config.connectionTimeout,
+      debug: this.config.debug,
+    });
+
+    // Create JSON-RPC client with IPC transport
+    this.client = new BaseJSONRPCClient({
+      transport: this.transport,
+      requestTimeout: this.config.requestTimeout,
+      debug: this.config.debug,
+    });
+
+    // Forward events from underlying client
+    this.setupEventForwarding();
+  }
+
+  /**
+   * Setup event forwarding from underlying client to this wrapper
+   * @private
+   */
+  private setupEventForwarding(): void {
+    // Forward connected event
+    this.client.on('connected', () => {
+      this.state = State.CONNECTED;
+      this.reconnectAttempts = 0;
+      this.emit('connected');
+    });
+
+    // Forward disconnected event
+    this.client.on('disconnected', () => {
+      const wasConnected = this.state === State.CONNECTED;
+      this.state = State.DISCONNECTED;
+      this.emit('disconnected');
+
+      // Auto-reconnect if enabled and was previously connected
+      if (
+        wasConnected &&
+        this.config.autoReconnect &&
+        this.reconnectAttempts < this.config.maxReconnectAttempts
+      ) {
+        this.reconnectAttempts++;
+        this.state = State.RECONNECTING;
+        this.emit('reconnecting', this.reconnectAttempts);
+
+        setTimeout(() => {
+          this.connect().catch((error) => {
+            if (this.config.debug) {
+              console.log('[JSONRPCClient] Reconnection failed:', error.message);
+            }
+          });
+        }, this.config.reconnectDelay);
+      }
+    });
+
+    // Forward notification event
+    this.client.on('notification', (method, params) => {
+      this.emit('notification', method, params);
+    });
+
+    // Forward error event
+    this.client.on('error', (error) => {
+      this.emit('error', error);
+    });
   }
 
   /**
@@ -106,7 +147,9 @@ export class JSONRPCClient extends EventEmitter<ClientEvents> {
    */
   async connect(): Promise<void> {
     if (this.state === State.CONNECTED) {
-      this.log('Already connected');
+      if (this.config.debug) {
+        console.log('[JSONRPCClient] Already connected');
+      }
       return;
     }
 
@@ -115,56 +158,21 @@ export class JSONRPCClient extends EventEmitter<ClientEvents> {
     }
 
     this.state = State.CONNECTING;
-    this.log('Connecting to', this.config.socketPath);
-
-    return new Promise((resolve, reject) => {
-      const socket = new net.Socket();
-      this.socket = socket;
-
-      const timeout = setTimeout(() => {
-        socket.destroy();
-        reject(new Error(`Connection timeout after ${this.config.connectionTimeout}ms`));
-      }, this.config.connectionTimeout);
-
-      socket.on('connect', () => {
-        clearTimeout(timeout);
-        this.state = State.CONNECTED;
-        this.reconnectAttempts = 0;
-        this.log('Connected');
-        this.emit('connected');
-        resolve();
-      });
-
-      socket.on('data', (data) => {
-        this.handleData(data);
-      });
-
-      socket.on('end', () => {
-        this.log('Connection ended');
-        this.handleDisconnect();
-      });
-
-      socket.on('error', (error) => {
-        clearTimeout(timeout);
-        this.log('Socket error:', error.message);
-        this.emit('error', error);
-
-        if (this.state === State.CONNECTING) {
-          reject(error);
-        } else {
-          this.handleDisconnect();
+    try {
+      await this.client.connect();
+      // Ensure state is updated and event is emitted
+      // Event handler may have already set state to CONNECTED
+      if (this.client.isConnected()) {
+        if ((this.state as ConnectionState) !== State.CONNECTED) {
+          this.state = State.CONNECTED;
+          this.reconnectAttempts = 0;
+          this.emit('connected');
         }
-      });
-
-      socket.on('close', () => {
-        this.log('Socket closed');
-        this.handleDisconnect();
-      });
-
-      // Connect to socket
-      const socketPath = this.normalizeSocketPath(this.config.socketPath);
-      socket.connect(socketPath);
-    });
+      }
+    } catch (error) {
+      this.state = State.DISCONNECTED;
+      throw error;
+    }
   }
 
   /**
@@ -175,71 +183,75 @@ export class JSONRPCClient extends EventEmitter<ClientEvents> {
       return;
     }
 
+    const wasConnected = this.state === State.CONNECTED;
     this.state = State.CLOSED;
-    this.log('Disconnecting');
+    await this.client.disconnect();
 
-    // Reject all pending requests
-    for (const [id, pending] of this.pendingRequests.entries()) {
-      clearTimeout(pending.timeout);
-      pending.reject(new Error('Client disconnected'));
-      this.pendingRequests.delete(id);
+    // Emit disconnected event if we were connected
+    if (wasConnected) {
+      this.emit('disconnected');
     }
-
-    if (this.socket) {
-      this.socket.destroy();
-      this.socket = null;
-    }
-
-    this.emit('disconnected');
   }
 
   /**
    * Send a JSON-RPC request and wait for response
    */
   async request<TResult = unknown>(method: string, params?: unknown): Promise<TResult> {
-    if (this.state !== State.CONNECTED) {
-      throw new Error('Not connected');
+    try {
+      return await this.client.request<TResult>(method, params);
+    } catch (error) {
+      throw this.transformError(error);
     }
-
-    const id = ++this.requestId;
-    const request: JSONRPCRequest = {
-      jsonrpc: '2.0',
-      method,
-      params,
-      id,
-    };
-
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        this.pendingRequests.delete(id);
-        reject(new Error(`Request timeout after ${this.config.requestTimeout}ms`));
-      }, this.config.requestTimeout);
-
-      this.pendingRequests.set(id, {
-        resolve: resolve as (result: unknown) => void,
-        reject,
-        timeout,
-      });
-
-      this.send(request);
-    }) as Promise<TResult>;
   }
 
   /**
    * Send a JSON-RPC notification (no response expected)
    */
   notify(method: string, params?: unknown): void {
-    if (this.state !== State.CONNECTED) {
-      throw new Error('Not connected');
+    try {
+      this.client.notify(method, params);
+    } catch (error) {
+      throw this.transformError(error);
+    }
+  }
+
+  /**
+   * Transform errors from underlying client to maintain backward compatibility
+   * @private
+   */
+  private transformError(error: unknown): Error {
+    if (!(error instanceof Error)) {
+      return error as Error;
     }
 
-    const notification: JSONRPCNotification = {
-      jsonrpc: '2.0',
-      method,
-      params,
-    };
+    // Convert BaseJSONRPCError to local JSONRPCError for backward compatibility
+    if (error instanceof BaseJSONRPCError) {
+      return new JSONRPCError({
+        code: error.code,
+        message: error.message,
+        data: error.data,
+      });
+    }
 
-    this.send(notification);
+    // Transform error messages to match original client
+    let message = error.message;
+
+    // "Client not connected" → "Not connected"
+    if (message === 'Client not connected') {
+      message = 'Not connected';
+    }
+
+    // "Request N timed out after Xms" → "Request timeout after Xms"
+    const timeoutMatch = message.match(/Request \d+ timed out after (\d+)ms/);
+    if (timeoutMatch) {
+      message = `Request timeout after ${timeoutMatch[1]}ms`;
+    }
+
+    // Create a new error with the transformed message
+    const transformedError = new Error(message);
+    transformedError.name = error.name;
+    transformedError.stack = error.stack;
+    return transformedError;
   }
 
   /**
@@ -254,172 +266,5 @@ export class JSONRPCClient extends EventEmitter<ClientEvents> {
    */
   isConnected(): boolean {
     return this.state === State.CONNECTED;
-  }
-
-  /**
-   * Normalize socket path for platform
-   * @private
-   */
-  private normalizeSocketPath(path: string): string {
-    if (os.platform() === 'win32') {
-      // If it's already a named pipe path, return as-is
-      if (path.startsWith('\\\\.\\pipe\\') || path.startsWith('\\\\?\\pipe\\')) {
-        return path;
-      }
-
-      // If it's an absolute Windows path (contains drive letter), use as-is for Unix socket
-      // Windows 10+ supports Unix domain sockets at file paths
-      if (path.includes(':') || path.startsWith('\\') || path.startsWith('/')) {
-        return path;
-      }
-
-      // For simple names (no path separators), convert to named pipe
-      // This matches the Go server behavior with winio
-      return `\\\\.\\pipe\\${path}`;
-    }
-
-    // Unix/Linux/Mac socket path normalization
-    // If already has directory separator, keep it
-    if (path.includes('/')) {
-      return path;
-    }
-
-    // If has .sock extension, prepend /tmp/
-    if (path.endsWith('.sock')) {
-      return `/tmp/${path}`;
-    }
-
-    // Simple name - convert to /tmp/{name}.sock
-    return `/tmp/${path}.sock`;
-  }
-
-  /**
-   * Send a message to the server
-   * @private
-   */
-  private send(message: JSONRPCMessage): void {
-    if (!this.socket) {
-      throw new Error('Socket not initialized');
-    }
-
-    const json = JSON.stringify(message);
-    this.log('Sending:', json);
-    this.socket.write(`${json}\n`);
-  }
-
-  /**
-   * Handle incoming data
-   * @private
-   */
-  private handleData(data: Buffer): void {
-    this.buffer += data.toString();
-
-    // Process complete JSON lines
-    let newlineIndex: number;
-    while ((newlineIndex = this.buffer.indexOf('\n')) !== -1) {
-      const line = this.buffer.slice(0, newlineIndex).trim();
-      this.buffer = this.buffer.slice(newlineIndex + 1);
-
-      if (line.length === 0) continue;
-
-      try {
-        const message = JSON.parse(line) as JSONRPCMessage;
-        this.handleMessage(message);
-      } catch (error) {
-        this.log('Failed to parse message:', line, error);
-        this.emit('error', error instanceof Error ? error : new Error(String(error)));
-      }
-    }
-  }
-
-  /**
-   * Handle a parsed JSON-RPC message
-   * @private
-   */
-  private handleMessage(message: JSONRPCMessage): void {
-    this.log('Received:', JSON.stringify(message));
-
-    // Handle error response
-    if (isErrorResponse(message)) {
-      const pending = this.pendingRequests.get(message.id);
-      if (pending) {
-        clearTimeout(pending.timeout);
-        this.pendingRequests.delete(message.id);
-        const error = new JSONRPCError(message.error);
-        pending.reject(error);
-      }
-      return;
-    }
-
-    // Handle success response
-    if (isSuccessResponse(message)) {
-      const pending = this.pendingRequests.get(message.id);
-      if (pending) {
-        clearTimeout(pending.timeout);
-        this.pendingRequests.delete(message.id);
-        pending.resolve(message.result);
-      }
-      return;
-    }
-
-    // Handle notification
-    if (isNotification(message)) {
-      this.emit('notification', message.method, message.params);
-      return;
-    }
-
-    // Unknown message type
-    this.log('Unknown message type:', message);
-  }
-
-  /**
-   * Handle disconnection
-   * @private
-   */
-  private handleDisconnect(): void {
-    if (this.state === State.CLOSED) {
-      return;
-    }
-
-    const wasConnected = this.state === State.CONNECTED;
-    this.state = State.DISCONNECTED;
-
-    // Reject all pending requests
-    for (const [id, pending] of this.pendingRequests.entries()) {
-      clearTimeout(pending.timeout);
-      pending.reject(new Error('Connection lost'));
-      this.pendingRequests.delete(id);
-    }
-
-    if (wasConnected) {
-      this.emit('disconnected');
-
-      // Auto-reconnect if enabled
-      if (
-        this.config.autoReconnect &&
-        this.reconnectAttempts < this.config.maxReconnectAttempts
-      ) {
-        this.reconnectAttempts++;
-        this.state = State.RECONNECTING;
-        this.log(`Reconnecting (attempt ${this.reconnectAttempts})`);
-        this.emit('reconnecting', this.reconnectAttempts);
-
-        setTimeout(() => {
-          this.connect().catch((error) => {
-            this.log('Reconnection failed:', error.message);
-          });
-        }, this.config.reconnectDelay);
-      }
-    }
-  }
-
-  /**
-   * Debug logging
-   * @private
-   */
-  private log(...args: unknown[]): void {
-    if (this.config.debug) {
-      console.log('[JSONRPCClient]', ...args);
-    }
   }
 }

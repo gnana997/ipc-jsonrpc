@@ -36,11 +36,7 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -55,6 +51,9 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "npm run build && changeset publish"
+  },
+  "dependencies": {
+    "@gnana997/node-jsonrpc": "^0.1.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
