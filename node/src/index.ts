@@ -8,6 +8,8 @@
  */
 
 export { JSONRPCClient, JSONRPCError } from './client.js';
+export { IPCTransport } from './transport.js';
+export type { IPCTransportConfig } from './transport.js';
 export type {
   ClientConfig,
   ClientEvents,
