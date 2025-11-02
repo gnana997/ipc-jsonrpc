@@ -53,7 +53,7 @@
     "release": "npm run build && changeset publish"
   },
   "dependencies": {
-    "@gnana997/node-jsonrpc": "^0.1.2"
+    "@gnana997/node-jsonrpc": "^1.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
