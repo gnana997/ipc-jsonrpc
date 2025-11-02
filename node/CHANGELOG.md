@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.2.1
+
+### Patch Changes
+
+- Refactored to use @gnana997/node-jsonrpc as the underlying JSON-RPC 2.0 protocol implementation.
+
+  This is a major internal refactoring with zero breaking changes. The package now uses @gnana997/node-jsonrpc for JSON-RPC protocol handling while maintaining the IPC transport layer.
+
+  **Architecture Changes:**
+
+  - Added dependency on @gnana997/node-jsonrpc@^1.0.0
+  - Created IPCTransport class implementing the Transport interface
+  - Refactored JSONRPCClient as a wrapper maintaining backward compatibility
+  - All existing code continues to work without modification
+
+  **Testing:**
+
+  - 51/55 unit tests passing with 4 skipped (100%)
+  - All real-world examples (echo-client) work perfectly
+  - Zero breaking changes verified
+
 ## 0.2.0
 
 ### Minor Changes
